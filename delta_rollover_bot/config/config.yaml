@@ -1,0 +1,92 @@
+# Delta Rollover Bot Configuration
+
+# API Keys & Credentials (Store sensitive data in a separate, gitignored file or environment variables)
+# Example: tradeovate_credentials.yaml might be gitignored and loaded separately.
+api_keys:
+  bookmap_api_key: "YOUR_BOOKMAP_API_KEY" # Replace with your actual key
+  spotgamma_api_token: "YOUR_SPOTGAMMA_TOKEN" # Replace with your actual token
+  # tradeovate_user: "YOUR_TRADEOVATE_USER" # Consider separate file
+  # tradeovate_pass: "YOUR_TRADEOVATE_PASS" # Consider separate file
+  # tradeovate_app_id: "YOUR_TRADEOVATE_APP_ID" # Consider separate file
+  # tradeovate_cid: "YOUR_TRADEOVATE_CID" # Consider separate file
+
+# Trading Parameters
+trading:
+  instrument: "MNQ" # "ES" or "MNQ"
+  quantity: 1
+  max_position_size: 2 # Max contracts per instrument
+  target_atr_multiplier: 1.0 # For TP1
+  target2_atr_multiplier: 2.0 # For TP2
+  stop_buffer_ticks: 4 # e.g., 1 point for MNQ if tick_size is 0.25
+  trail_atr_multiplier: 1.5 # ATR multiple for trailing stop after TP1
+
+# Pattern Detection Thresholds
+pattern:
+  # Aggressive Imbalance Stage
+  delta_threshold_factor: 2.0 # Cumulative delta >= factor * avg_delta_N_min
+  avg_delta_minutes: 5 # N minutes for average delta calculation
+  imbalance_ratio: 0.65 # 65% of ticks are market buys/sells
+
+  # Accumulation Stage
+  range_pct_atr: 0.3 # Price range <= X% of ATR
+  accum_bars: 5 # Min bars for accumulation
+  flat_delta_threshold: 0.1 # |Delta| < X * avg_delta_N_min (or a fixed small value)
+
+  # Rollover Confirmation & Breakout
+  volume_spike_factor: 2.0 # Spike in trades/volume factor * 20-bar SMA
+
+# Filters / Confluence
+filters:
+  # Higher Timeframe (30-min)
+  use_htf_vwap_filter: true
+  htf_period: "30T" # Pandas offset alias for 30 minutes
+
+  # RSI Filter
+  use_rsi_filter: true
+  rsi_period: 14
+  rsi_long_threshold: 50
+  rsi_short_threshold: 50
+
+  # SpotGamma Confluence
+  use_spotgamma_filter: true
+  gamma_band_points: 5 # +/- points around large combo strike
+
+# Risk Management (Prop Firm Rules)
+risk_management:
+  daily_loss_limit_usd: 500.00 # Max daily loss in USD
+  # trailing_drawdown_usd: 2500.00 # Example, specific rules vary
+
+# Data Provider Settings
+data_providers:
+  bookmap:
+    # Settings for Bookmap connection (e.g., host, port if not default)
+    # Historical data path for backtesting
+    historical_data_path: "path/to/your/bookmap_hd_files/" # Example
+  spotgamma:
+    cache_duration_seconds: 300 # Cache SpotGamma data for 5 minutes
+
+# Backtesting Settings
+backtesting:
+  start_date: "2023-01-01"
+  end_date: "2023-12-31"
+  initial_capital: 100000 # For P&L calculation
+
+# Logging & Alerting
+logging:
+  log_level: "INFO" # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  log_file: "delta_rollover_bot.log" # Will be stored in ./logs/ by default by logging_utils
+  trades_csv_file: "trades_log.csv" # Changed name slightly to avoid conflict if "trades.csv" is general
+alerting:
+  webhook_url: "YOUR_WEBHOOK_URL" # Optional: for generic webhooks (e.g. Slack)
+  discord_webhook_url: "YOUR_DISCORD_WEBHOOK_URL" # Optional: specifically for Discord
+  telegram_bot_token: "YOUR_TELEGRAM_BOT_TOKEN" # Optional
+  telegram_chat_id: "YOUR_TELEGRAM_CHAT_ID" # Optional
+
+# Tick sizes for instruments (important for stop/profit calculations)
+instruments:
+  MNQ:
+    tick_size: 0.25
+    point_value: 5.0 # Value of 1 full point move
+  ES:
+    tick_size: 0.25
+    point_value: 50.0 # Value of 1 full point move

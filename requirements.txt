@@ -1,0 +1,16 @@
+# Project requirements will be listed here
+PyYAML>=5.3.0
+websockets>=8.1.0 # For Bookmap and Tradeovate WebSockets
+aiofile>=3.5.0 # For async file operations, if needed for .bmq
+aiohttp>=3.6.0 # For async HTTP requests (SpotGamma)
+pandas>=1.0.0
+numpy>=1.18.0
+matplotlib>=3.2.0 # For plotting in Jupyter notebook
+python-json-logger>=2.0.0 # For JSON logging
+# python-telegram-bot>=13.0 # Optional: For Telegram alerts
+pytest>=5.4.0 # For unit tests
+pytest-cov>=2.8.0 # For test coverage
+mkdocs>=1.1.0 # For documentation
+# Example:
+# asyncio>=3.4.0
+# jupyterlab>=2.0.0 # For Jupyter notebook development
